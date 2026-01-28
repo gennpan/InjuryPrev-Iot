@@ -1,0 +1,209 @@
+<html lang="it">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>IoT Dashboard</title>
+    <link rel="stylesheet" href="../static/style.css"/>
+</head>
+
+<body>
+<header>
+    <div class="hamburger" onclick="toggleSidebar()">☰</div>
+    <h2>InjuryPrev - Dashboard</h2>
+</header>
+
+<nav id="sidebar" class="hidden">
+    <ul>
+        <li><a href="home.html">Home</a></li>
+        <li><a href="statistics.html">Dashboard</a></li>
+    </ul>
+</nav>
+
+<main id="main">
+    <div class="card">
+        <h3>Feature fisiologiche utilizzate</h3>
+        <p>
+            Le seguenti variabili vengono utilizzate dal modello LSTM per analizzare il comportamento fisiologico e
+            mostrare il rischio infortunio.
+        </p>
+
+        <table class="features-table">
+            <thead>
+            <tr>
+                <th>Feature</th>
+                <th>Descrizione</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>Speed Mean</td>
+                <td>Velocità media</td>
+            </tr>
+            <tr>
+                <td>Speed Max</td>
+                <td>Velocità massima</td>
+            </tr>
+            <tr>
+                <td>Speed Std.</td>
+                <td>boh</td>
+            </tr>
+            <tr>
+                <td>Acc. Norm. Mean</td>
+                <td>Accelerazione boh media</td>
+            </tr>
+            <tr>
+                <td>Acc. Norm. Max</td>
+                <td>Accelerazione boh massima</td>
+            </tr>
+            <tr>
+                <td>Acc. Norm. Std.</td>
+                <td>Accelerazione boh</td>
+            </tr>
+            <tr>
+                <td>Gyro. Norm. Mean</td>
+                <td>boh</td>
+            </tr>
+            <tr>
+                <td>Gyro. Norm. Max</td>
+                <td>boh</td>
+            </tr>
+            <tr>
+                <td>N. Samples</td>
+                <td>boh</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card">
+        <h3>Dati fisiologici (CSV)</h3>
+        <p>
+            Valori reali estratti dal file CSV utilizzato dal modello
+            per l’analisi del rischio infortunio.
+        </p>
+        <div class="dropdown">
+            <button class="dropdown-btn" id="dropdownBtn">
+                Seleziona l'ID del calciatore
+            </button>
+            <ul class="dropdown-menu" id="dropdownMenu"></ul> <!--popolato dinamicamente con script-->
+        </div>
+        <div style="overflow-x:auto;">
+            <table class="features-table">
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Speed Mean</th>
+                    <th>Speed Max</th>
+                    <th>Speed Std.</th>
+                    <th>Acc. Norm. Mean</th>
+                    <th>Acc. Norm. Max</th>
+                    <th>Acc. Norm. Std.</th>
+                    <th>Gyro. Norm. Mean</th>
+                    <th>Gyro. Norm. Max</th>
+                    <th>N. Samples</th>
+                </tr>
+                </thead>
+                <tbody id="data-table-body">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<script>
+    const sidebar = document.getElementById('sidebar');
+    const main = document.getElementById('main');
+
+    function toggleSidebar() {
+        sidebar.classList.toggle('hidden');
+        main.classList.toggle('full');
+    }
+</script>
+
+<script>
+    const currentPlayerId = "1"; // ID del giocatore da usare
+    const dropdownBtn = document.getElementById("dropdownBtn");
+    const dropdownMenu = document.getElementById("dropdownMenu");
+
+    async function populateDropdown() {
+        const response = await fetch(`/api/player/${currentPlayerId}/files`);
+        const files = await response.json();
+
+        dropdownMenu.innerHTML = "";
+
+        files.forEach(file => {
+            const li = document.createElement("li");
+            li.textContent = file;
+            li.classList.add("dropdown-item");
+            li.dataset.value = file;
+            li.addEventListener("click", () => {
+                dropdownBtn.textContent = file;
+                dropdownMenu.parentElement.classList.remove("open");
+                loadCsvData(file);
+            });
+            dropdownMenu.appendChild(li);
+        });
+
+        if (files.length > 0) {
+            dropdownBtn.textContent = files[0];
+            loadCsvData(files[0]);
+        }
+    }
+
+    async function loadCsvData(csvFile) {
+        const response = await fetch(`/api/player/${currentPlayerId}?file=${csvFile}`);
+        const data = await response.json();
+
+        const tableBody = document.getElementById("data-table-body");
+        tableBody.innerHTML = "";
+
+        data.forEach(row => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                    <td>${row.date}</td>
+                    <td>${row.speed_mean}</td>
+                    <td>${row.speed_max}</td>
+                    <td>${row.speed_std}</td>
+                    <td>${row.acc_norm_mean}</td>
+                    <td>${row.acc_norm_max}</td>
+                    <td>${row.acc_norm_std}</td>
+                    <td>${row.gyro_norm_mean}</td>
+                    <td>${row.gyro_norm_max}</td>
+                    <td>${row.n_samples}</td>
+                    `;
+            tableBody.appendChild(tr);
+        });
+    }
+
+    dropdownBtn.addEventListener("click", e => {
+        e.stopPropagation();
+        dropdownBtn.parentElement.classList.toggle("open");
+    });
+
+    document.addEventListener("click", () => {
+        dropdownBtn.parentElement.classList.remove("open");
+    });
+    populateDropdown();
+</script>
+
+
+</body>
+</html>
+
+<!--<canvas id="hrChart" width="400" height="200"></canvas>-->
+
+<!--<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>-->
+<!--<script>-->
+<!--    const ctx = document.getElementById('hrChart');-->
+<!--    new Chart(ctx, {-->
+<!--        type: 'line',-->
+<!--        data: {-->
+<!--            labels: ['t1', 't2', 't3', 't4', 't5'],-->
+<!--            datasets: [{-->
+<!--                label: 'Heart Rate',-->
+<!--                data: [78, 82, 90, 110, 150],-->
+<!--                borderWidth: 2-->
+<!--            }]-->
+<!--        }-->
+<!--    });-->
+<!--</script>-->

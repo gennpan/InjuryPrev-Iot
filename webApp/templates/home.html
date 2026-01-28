@@ -1,0 +1,66 @@
+<html lang="it">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>InjuryPrev</title>
+    <link rel="stylesheet" href="../static/style.css" />
+</head>
+<body>
+<header>
+    <div class="hamburger" onclick="toggleSidebar()">☰</div>
+    <h2>InjuryPrev - Home</h2>
+</header>
+
+<nav id="sidebar" class="hidden">
+        <ul>
+            <li><a href="home.html">Home</a></li>
+            <li><a href="statistics.html">Dashboard</a></li>
+        </ul>
+</nav>
+
+<main id="main">
+    <div class="card">
+        <h3>Stato dei dispositivi</h3>
+        <p>stato stato.</p>
+    </div>
+    <div class="card">
+        <h3>BOH</h3>
+        <p>misurazioni</p>
+    </div>
+    <br>
+    <br>
+    <br>
+    <br>
+<button type="button" class="btl" > <!-- onclick="testPrediction()" pulsante con funzione per calcolare, da modificare-->
+        Calcola rischio
+    </button>
+    <br>
+    <br>
+    <br>
+    <br>
+</main>
+
+
+
+<script>
+    const sidebar = document.getElementById('sidebar');
+    const main = document.getElementById('main');
+    function toggleSidebar() {
+        sidebar.classList.toggle('hidden');
+        main.classList.toggle('full');
+    }
+</script>
+
+<!--FUNZIONE PER PULSANTE DA MODIFICARE-->
+<!--<script src="js/api.js"></script>-->
+<!--<script>-->
+<!--    async function testPrediction() {-->
+<!--        const seq = [78, 82, 90, 110, 150]; // esempio heart rate-->
+<!--        const prob = await getRiskPrediction(seq);-->
+<!--        alert("Probabilità di infortunio: " + (prob * 100).toFixed(2) + "%");-->
+<!--    }-->
+<!--</script>-->
+
+
+</body>
+</html>
