@@ -8,7 +8,7 @@ from typing import Literal
 import torch
 from torch.utils.data import DataLoader, TensorDataset
 from dataset import make_dataset
-from models.FCNN import FCNN, parse_hidden_dims
+from webApp.model.FCNN import FCNN, parse_hidden_dims
 from metrics import BinaryClassificationEvaluator
 
 
